@@ -63,3 +63,7 @@ variable "mongo_region" {
   description = "Region used for mongo's AWS services"
   default     = "US_WEST_2"
 }
+
+variable "mongo_user_password" {
+  description = "Password used by the api service to access the mongo cluster"
+}

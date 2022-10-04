@@ -1,3 +1,21 @@
+terraform {
+  required_providers {
+    mongodbatlas = {
+      source  = "mongodb/mongodbatlas"
+      version = "1.4.5"
+    }
+  }
+
+  cloud {
+    organization = "everyones-a-critic"
+    workspaces {
+      name = "ratings-service"
+    }
+  }
+}
+
+provider "mongodbatlas" {}
+
 provider "aws" {
   region = var.region
 }
