@@ -207,7 +207,7 @@ resource "aws_ecs_task_definition" "main" {
     environment = [
       {
           name = "MONGO_USERNAME",
-          value = mongodbatlas_database_user.api_user.name
+          value = mongodbatlas_database_user.api_user.id
       },
       {
           name = "MONGO_PASSWORD",
