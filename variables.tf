@@ -58,3 +58,8 @@ variable "health_check_path" {
   description = "Http path for task health check"
   default     = ""
 }
+
+variable "mongo_region" {
+  description = "Region used for mongo's AWS services"
+  default     = "US_WEST_2"
+}

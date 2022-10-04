@@ -12,6 +12,38 @@ data "tfe_outputs" "api_gateway" {
   workspace    = "api-gateway"
 }
 
+data "tfe_outputs" "mongo_db" {
+  organization = "everyones-a-critic"
+  workspace    = "mongo-db"
+}
+
+# Creating Mongo Resources
+resource "mongodbatlas_serverless_instance" "main" {
+  project_id = data.tfe_outputs.mongo_db.values.project_id
+  name       = "ratings-service-${var.environment}"
+
+  provider_settings_backing_provider_name = "AWS"
+  provider_settings_provider_name         = "SERVERLESS"
+  provider_settings_region_name           = var.mongo_region
+}
+
+resource "mongodbatlas_database_user" "api_user" {
+  username           = "api_user"
+  password           = var.mongo_user_password
+  project_id         = data.tfe_outputs.mongo_db.values.project_id
+  auth_database_name = "admin"
+
+  roles {
+    role_name     = "readWriteAnyDatabase"
+    database_name = "admin"
+  }
+
+  scopes {
+    name = mongodbatlas_serverless_instance.main.name
+    type = "CLUSTER"
+  }
+}
+
 resource "aws_vpc" "main" {
   cidr_block = var.cidr
   tags = {
@@ -147,13 +179,23 @@ resource "aws_ecs_task_definition" "main" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   container_definitions = jsonencode([{
     name      = "${var.name}-container-${var.environment}"
-    image     = "${data.tfe_outputs.ecr_repositories.values.communities_service_repository_url}"
+    image     = "${data.tfe_outputs.ecr_repositories.values.ratings_service_repository_url}"
     essential = true
     portMappings = [{
       protocol      = "tcp"
       containerPort = var.container_port
       hostPort      = var.container_port
-    }]
+    }],
+    environment = [
+      {
+          name = "MONGO_USERNAME",
+          value = mongodbatlas_database_user.api_user.name
+      },
+      {
+          name = "MONGO_PASSWORD",
+          value = var.mongo_user_password
+      },
+    ]
   }])
 }
 
