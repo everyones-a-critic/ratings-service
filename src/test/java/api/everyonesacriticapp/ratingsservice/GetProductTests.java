@@ -5,24 +5,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.containsString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class RatingsServiceApplicationTests {
+public class GetProductTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -30,13 +35,15 @@ public class RatingsServiceApplicationTests {
 	@MockBean
 	private ProductRepository mongoMock;
 
+	@MockBean
+	private Page mockPage;
+
 	@InjectMocks
 	ProductController controller;
 
-	@Test
-	public void shouldReturnDefaultMessage() throws Exception {
-		Product sampleProduct = new Product(
-			"prod-12345",
+	private static Product createTestProduct(int productNumber) {
+		return new Product(
+			"prod-" + String.valueOf(productNumber),
 			"Sample Product",
 			"comm-12345",
 			"Sample Brand",
@@ -53,17 +60,26 @@ public class RatingsServiceApplicationTests {
 			"user-12345",
 			LocalDateTime.parse("2022-09-28T19:39:43")
 		);
+	}
 
-		List<Product> sampleProducts = List.of(
-			sampleProduct
-		);
-		
-    	Mockito.when(mongoMock.findAll()).thenReturn(sampleProducts);
+	@Test
+	public void testGetProduct() throws Exception {
+		Product sampleProduct = createTestProduct(12345);
 
-		this.mockMvc.perform(get("/products")).andDo(print())
+    	Mockito.when(mongoMock.findById("12345")).thenReturn(Optional.of(sampleProduct));
+
+		this.mockMvc.perform(get("/products/12345")).andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(content().string(equalTo(
-				"{\"next\":null,\"previous\":null,\"results\":[{\"id\":\"prod-12345\",\"name\":\"Sample Product\",\"community_id\":\"comm-12345\",\"brand\":\"Sample Brand\",\"image_url\":\"https://www.example.com/image\",\"tasting_notes\":[\"Some\",\"Tasting\",\"Notes\"],\"price\":19.5,\"price_per\":\"12 oz\",\"categories\":[\"Some\",\"Categories\"],\"location\":\"North America\",\"process\":\"A Process\",\"variety\":\"A Variety\"}]}"
+			.andExpect(content().string(containsString(
+				"\"id\":\"prod-12345"
 			)));
+	}
+
+    @Test
+	public void testNotFound() throws Exception {
+    	Mockito.when(mongoMock.findById("12345")).thenReturn(Optional.empty());
+
+		this.mockMvc.perform(get("/products/12345")).andDo(print())
+			.andExpect(status().is(404));
 	}
 }
