@@ -324,67 +324,38 @@ resource "aws_api_gateway_vpc_link" "main" {
   target_arns = [aws_lb.main.arn]
 }
 
-# resource "aws_api_gateway_method" "get-root" {
-#   rest_api_id   = data.tfe_outputs.api_gateway.values.gateway_id
-#   resource_id   = data.tfe_outputs.api_gateway.values.root_resource_id
-#   authorization = "NONE"
-#   http_method   = "GET"
+resource "aws_api_gateway_resource" "root" {
+  rest_api_id = data.tfe_outputs.api_gateway.values.gateway_id
+  parent_id   = data.tfe_outputs.api_gateway.values.root_resource_id
+  path_part   = "{proxy+}"
 
-#   request_parameters = {
-#     "method.request.querystring.name" = false
-#   }
+}
 
-#   depends_on = [aws_api_gateway_vpc_link.main]
+resource "aws_api_gateway_method" "any_root" {
+  rest_api_id   = data.tfe_outputs.api_gateway.values.gateway_id
+  resource_id   = aws_api_gateway_resource.root.id
+  authorization = "NONE"
+  http_method   = "ANY"
 
-# }
+  request_parameters = {
+    "method.request.path.proxy" = true
+  }
 
-# resource "aws_api_gateway_model" "community" {
-#   rest_api_id  = aws_api_gateway_rest_api.main.id
-#   name         = "community"
-#   content_type = "application/json"
+}
 
-#   schema = <<EOF
-# {
-#   "$schema": "http://json-schema.org/draft-04/schema#",
-#   "type": "object",
-#   "properties": {
-#     "id": {
-#       "type": "integer"
-#     },
-#     "name": {
-#       "type": "string"
-#     }
-#   },
-#   "required": [
-#     "id",
-#     "name"
-#   ]
-# }
-# EOF
-# }
+resource "aws_api_gateway_integration" "main" {
+  rest_api_id = data.tfe_outputs.api_gateway.values.gateway_id
+  resource_id = aws_api_gateway_resource.root.id
+  http_method = aws_api_gateway_method.any_root.http_method
 
-# resource "aws_api_gateway_method_response" "response_200" {
-#   depends_on  = [aws_api_gateway_method.get-root]
-#   rest_api_id = aws_api_gateway_rest_api.main.id
-#   resource_id = aws_api_gateway_rest_api.main.root_resource_id
-#   http_method = aws_api_gateway_method.get-root.http_method
-#   status_code = "200"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${aws_lb.main.dns_name}/{proxy}"
+  integration_http_method = aws_api_gateway_method.any_root.http_method
+  cache_key_parameters    = ["method.request.path.proxy"]
+  request_parameters = {
+    "integration.request.path.proxy" = "method.request.path.proxy"
+  }
 
-#   response_models = {
-#     "application/json" : aws_api_gateway_model.community.name
-#   }
-# }
-
-# resource "aws_api_gateway_integration" "main" {
-#   rest_api_id = data.tfe_outputs.api_gateway.values.gateway_id
-#   resource_id = aws_api_gateway_rest_api.main.root_resource_id
-#   http_method = aws_api_gateway_method.get-root.http_method
-
-#   type                    = "HTTP_PROXY"
-#   uri                     = "http://eac-community-service-alb-prod-69f50d3da3fe103d.elb.us-west-1.amazonaws.com"
-#   integration_http_method = "GET"
-
-#   connection_type = "VPC_LINK"
-#   connection_id   = aws_api_gateway_vpc_link.main.id
-# }
-
+  connection_type = "VPC_LINK"
+  connection_id   = aws_api_gateway_vpc_link.main.id
+}
