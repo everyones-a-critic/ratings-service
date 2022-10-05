@@ -206,8 +206,12 @@ resource "aws_ecs_task_definition" "main" {
     }],
     environment = [
       {
+          name = "MONGO_CLUSTER_NAME",
+          value = mongodbatlas_serverless_instance.main.name
+      },
+      {
           name = "MONGO_USERNAME",
-          value = mongodbatlas_database_user.api_user.id
+          value = mongodbatlas_database_user.api_user.username
       },
       {
           name = "MONGO_PASSWORD",
@@ -286,7 +290,8 @@ resource "aws_alb_target_group" "main" {
   vpc_id      = aws_vpc.main.id
   target_type = "ip"
   health_check {
-    enabled=false
+    enabled = true
+    path = var.health_check_path
   }
 }
 
@@ -318,3 +323,68 @@ resource "aws_api_gateway_vpc_link" "main" {
   name        = "${var.name}-vpc_link-${var.environment}"
   target_arns = [aws_lb.main.arn]
 }
+
+# resource "aws_api_gateway_method" "get-root" {
+#   rest_api_id   = data.tfe_outputs.api_gateway.values.gateway_id
+#   resource_id   = data.tfe_outputs.api_gateway.values.root_resource_id
+#   authorization = "NONE"
+#   http_method   = "GET"
+
+#   request_parameters = {
+#     "method.request.querystring.name" = false
+#   }
+
+#   depends_on = [aws_api_gateway_vpc_link.main]
+
+# }
+
+# resource "aws_api_gateway_model" "community" {
+#   rest_api_id  = aws_api_gateway_rest_api.main.id
+#   name         = "community"
+#   content_type = "application/json"
+
+#   schema = <<EOF
+# {
+#   "$schema": "http://json-schema.org/draft-04/schema#",
+#   "type": "object",
+#   "properties": {
+#     "id": {
+#       "type": "integer"
+#     },
+#     "name": {
+#       "type": "string"
+#     }
+#   },
+#   "required": [
+#     "id",
+#     "name"
+#   ]
+# }
+# EOF
+# }
+
+# resource "aws_api_gateway_method_response" "response_200" {
+#   depends_on  = [aws_api_gateway_method.get-root]
+#   rest_api_id = aws_api_gateway_rest_api.main.id
+#   resource_id = aws_api_gateway_rest_api.main.root_resource_id
+#   http_method = aws_api_gateway_method.get-root.http_method
+#   status_code = "200"
+
+#   response_models = {
+#     "application/json" : aws_api_gateway_model.community.name
+#   }
+# }
+
+# resource "aws_api_gateway_integration" "main" {
+#   rest_api_id = data.tfe_outputs.api_gateway.values.gateway_id
+#   resource_id = aws_api_gateway_rest_api.main.root_resource_id
+#   http_method = aws_api_gateway_method.get-root.http_method
+
+#   type                    = "HTTP_PROXY"
+#   uri                     = "http://eac-community-service-alb-prod-69f50d3da3fe103d.elb.us-west-1.amazonaws.com"
+#   integration_http_method = "GET"
+
+#   connection_type = "VPC_LINK"
+#   connection_id   = aws_api_gateway_vpc_link.main.id
+# }
+
