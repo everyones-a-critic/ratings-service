@@ -6,12 +6,11 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,8 +23,21 @@ public class ProductController {
     private ProductRepository repository;
 
 	@GetMapping("/products")
-	public Map<String, Object> getProducts(HttpServletRequest request, Pageable pageable) {
-		Page<Product> results = repository.findAll(pageable);
+	public Map<String, Object> getProducts(@RequestParam(required = false) String community_id, HttpServletRequest request, Pageable pageable) {
+		Page<Product> results;
+		if (community_id != null) {
+			ObjectId bson_id;
+			try {
+				bson_id = new ObjectId(community_id);
+			} catch (java.lang.IllegalArgumentException e) {
+				bson_id = new ObjectId();
+			}
+
+			results = repository.findByCommunityId(bson_id, pageable);
+		} else {
+			results = repository.findAll(pageable);	
+		}
+
 		// because one-indexed-parameters is set to true in application.properties
 		int pageNumber = results.getNumber() + 1;
 		int totalPages = results.getTotalPages();

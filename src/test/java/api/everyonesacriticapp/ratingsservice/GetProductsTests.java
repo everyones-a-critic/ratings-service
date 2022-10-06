@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -34,8 +35,11 @@ public class GetProductsTests {
 	@MockBean
 	private ProductRepository mongoMock;
 
-	@MockBean
-	private Page mockPage;
+	@MockBean(name="main")
+	private Page<Product> mockPage;
+
+	@MockBean(name="alt")
+	private Page<Product> mockPageAlt;
 
 	@InjectMocks
 	ProductController controller;
@@ -45,6 +49,27 @@ public class GetProductsTests {
 			"prod-" + String.valueOf(productNumber),
 			"Sample Product",
 			"comm-12345",
+			"Sample Brand",
+			"https://www.example.com/image",
+			new ArrayList<String>(List.of("Some", "Tasting", "Notes")),
+			19.5,
+			"12 oz",
+			new ArrayList<String>(List.of("Some", "Categories")),
+			"North America",
+			"A Process",
+			"A Variety",
+			"user-12345",
+			LocalDateTime.parse("2022-09-28T19:39:43"),
+			"user-12345",
+			LocalDateTime.parse("2022-09-28T19:39:43")
+		);
+	}
+
+	private static Product createTestProduct(int productNumber, String communityId) {
+		return new Product(
+			"prod-" + String.valueOf(productNumber),
+			"Sample Product",
+			communityId,
 			"Sample Brand",
 			"https://www.example.com/image",
 			new ArrayList<String>(List.of("Some", "Tasting", "Notes")),
@@ -172,6 +197,32 @@ public class GetProductsTests {
 			)))
 			.andExpect(content().string(containsString(
 				"\"previous\":null"
+			)));
+	}
+
+	@Test
+	public void testCommunityFilter() throws Exception {
+		List<Product> sampleProducts = new ArrayList<Product>();
+		sampleProducts.add(createTestProduct(1, "633c9a8ca8c3f241bf1df1b3"));
+
+		List<Product> sampleProductsAlt = new ArrayList<Product>();
+		sampleProductsAlt.add(createTestProduct(2));
+		
+		Mockito.when(mockPage.getContent()).thenReturn(sampleProducts);
+		Mockito.when(mockPage.getNumber()).thenReturn(0);
+		Mockito.when(mockPage.getTotalPages()).thenReturn(1);
+
+		Mockito.when(mockPageAlt.getContent()).thenReturn(sampleProductsAlt);
+		Mockito.when(mockPageAlt.getNumber()).thenReturn(0);
+		Mockito.when(mockPageAlt.getTotalPages()).thenReturn(1);
+
+		Mockito.when(mongoMock.findAll(ArgumentMatchers.isA(Pageable.class))).thenReturn(mockPage);
+		Mockito.when(mongoMock.findByCommunityId(ArgumentMatchers.isA(ObjectId.class), ArgumentMatchers.isA(Pageable.class))).thenReturn(mockPageAlt);
+
+		this.mockMvc.perform(get("/products?community_id=633c9a8ca8c3f241bf1df1b3")).andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString(
+				"\"id\":\"prod-2"
 			)));
 	}
 }
