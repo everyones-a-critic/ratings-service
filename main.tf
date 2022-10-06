@@ -334,7 +334,8 @@ resource "aws_api_gateway_resource" "root" {
 resource "aws_api_gateway_method" "any_root" {
   rest_api_id   = data.tfe_outputs.api_gateway.values.gateway_id
   resource_id   = aws_api_gateway_resource.root.id
-  authorization = "NONE"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = data.tfe_outputs.api_gateway.values.authorizer_id
   http_method   = "ANY"
 
   request_parameters = {
