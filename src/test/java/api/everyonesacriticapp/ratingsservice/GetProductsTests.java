@@ -219,7 +219,7 @@ public class GetProductsTests {
 		Mockito.when(mongoMock.findAll(ArgumentMatchers.isA(Pageable.class))).thenReturn(mockPage);
 		Mockito.when(mongoMock.findByCommunityId(ArgumentMatchers.isA(ObjectId.class), ArgumentMatchers.isA(Pageable.class))).thenReturn(mockPageAlt);
 
-		this.mockMvc.perform(get("/products?community_id=633c9a8ca8c3f241bf1df1b3")).andDo(print())
+		this.mockMvc.perform(get("/products?communityId=633c9a8ca8c3f241bf1df1b3")).andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString(
 				"\"id\":\"prod-2"

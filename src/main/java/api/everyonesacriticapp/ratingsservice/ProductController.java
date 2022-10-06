@@ -23,12 +23,12 @@ public class ProductController {
     private ProductRepository repository;
 
 	@GetMapping("/products")
-	public Map<String, Object> getProducts(@RequestParam(required = false) String community_id, HttpServletRequest request, Pageable pageable) {
+	public Map<String, Object> getProducts(@RequestParam(required = false) String communityId, HttpServletRequest request, Pageable pageable) {
 		Page<Product> results;
-		if (community_id != null) {
+		if (communityId != null) {
 			ObjectId bson_id;
 			try {
-				bson_id = new ObjectId(community_id);
+				bson_id = new ObjectId(communityId);
 			} catch (java.lang.IllegalArgumentException e) {
 				bson_id = new ObjectId();
 			}
