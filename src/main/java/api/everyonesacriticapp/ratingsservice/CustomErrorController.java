@@ -18,8 +18,13 @@ public class CustomErrorController implements ErrorController {
         Map<String, Object> jsonMap = new HashMap<String, Object>();
 
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        
-        jsonMap.put("message", "An error has occurred.");
+        Object message = request.getAttribute(RequestDispatcher.ERROR_MESSAGE);
+                
+        if (message != null && message != "") {
+            jsonMap.put("message", message);
+        } else {
+            jsonMap.put("message", "An error has occurred.");
+        }
         if (status != null) {
             if (status.toString().equals("404")) {
                 jsonMap.put("message", "The requested resource was not found.");
