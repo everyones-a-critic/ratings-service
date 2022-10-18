@@ -1,5 +1,6 @@
 package api.everyonesacriticapp.ratingsservice;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,14 +25,14 @@ public class Product {
     public String process;
     public String variety;
     private String created_by_id;
-    private LocalDateTime created_date;
+    public Instant created_date;
     private String modified_by_id;
-    private LocalDateTime modified_date;
+    public Instant modified_date;
 
     public Product(
         String id, String name, String community_id, String brand, String image_url, List<String> tasting_notes,
         Double price, String price_per, List<String> categories, String location, String process, 
-        String variety, String created_by_id, LocalDateTime created_date, String modified_by_id, LocalDateTime modified_date
+        String variety, String created_by_id, Instant created_date, String modified_by_id, Instant modified_date
     ) {
         this.id = id;
         this.name = name;

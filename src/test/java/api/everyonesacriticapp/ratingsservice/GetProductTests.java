@@ -4,16 +4,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.containsString;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -56,9 +53,9 @@ public class GetProductTests {
 			"A Process",
 			"A Variety",
 			"user-12345",
-			LocalDateTime.parse("2022-09-28T19:39:43"),
+			Instant.parse("2022-09-28T19:39:43.00Z"),
 			"user-12345",
-			LocalDateTime.parse("2022-09-28T19:39:43")
+			Instant.parse("2022-09-28T19:39:43.00Z")
 		);
 	}
 

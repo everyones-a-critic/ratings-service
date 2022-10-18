@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.containsString;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,9 +59,9 @@ public class GetProductsTests {
 			"A Process",
 			"A Variety",
 			"user-12345",
-			LocalDateTime.parse("2022-09-28T19:39:43"),
+			Instant.parse("2022-09-28T19:39:43.00Z"),
 			"user-12345",
-			LocalDateTime.parse("2022-09-28T19:39:43")
+			Instant.parse("2022-09-28T19:39:43.00Z")
 		);
 	}
 
@@ -80,9 +80,9 @@ public class GetProductsTests {
 			"A Process",
 			"A Variety",
 			"user-12345",
-			LocalDateTime.parse("2022-09-28T19:39:43"),
+			Instant.parse("2022-09-28T19:39:43.00Z"),
 			"user-12345",
-			LocalDateTime.parse("2022-09-28T19:39:43")
+			Instant.parse("2022-09-28T19:39:43.00Z")
 		);
 	}
 
@@ -100,7 +100,7 @@ public class GetProductsTests {
 		this.mockMvc.perform(get("/products")).andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().string(equalTo(
-				"{\"next\":null,\"previous\":null,\"results\":[{\"id\":\"prod-12345\",\"name\":\"Sample Product\",\"community_id\":\"comm-12345\",\"brand\":\"Sample Brand\",\"image_url\":\"https://www.example.com/image\",\"tasting_notes\":[\"Some\",\"Tasting\",\"Notes\"],\"price\":19.5,\"price_per\":\"12 oz\",\"categories\":[\"Some\",\"Categories\"],\"location\":\"North America\",\"process\":\"A Process\",\"variety\":\"A Variety\"}]}"
+				"{\"next\":null,\"previous\":null,\"results\":[{\"id\":\"prod-12345\",\"name\":\"Sample Product\",\"community_id\":\"comm-12345\",\"brand\":\"Sample Brand\",\"image_url\":\"https://www.example.com/image\",\"tasting_notes\":[\"Some\",\"Tasting\",\"Notes\"],\"price\":19.5,\"price_per\":\"12 oz\",\"categories\":[\"Some\",\"Categories\"],\"location\":\"North America\",\"process\":\"A Process\",\"variety\":\"A Variety\",\"created_date\":\"2022-09-28T19:39:43Z\",\"modified_date\":\"2022-09-28T19:39:43Z\"}]}"
 			)));
 	}
 
@@ -121,7 +121,7 @@ public class GetProductsTests {
 		this.mockMvc.perform(get("/products")).andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString(
-				"\"next\":\"http://localhost/products?page=2"
+				"\"next\":\"/products?page=2"
 			)))
 			.andExpect(content().string(containsString(
 				"\"previous\":null"
@@ -145,10 +145,10 @@ public class GetProductsTests {
 		this.mockMvc.perform(get("/products")).andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString(
-				"\"next\":\"http://localhost/products?page=3"
+				"\"next\":\"/products?page=3"
 			)))
 			.andExpect(content().string(containsString(
-				"\"previous\":\"http://localhost/products?page=1"
+				"\"previous\":\"/products?page=1"
 			)));
 	}
 
@@ -172,7 +172,7 @@ public class GetProductsTests {
 				"\"next\":null"
 			)))
 			.andExpect(content().string(containsString(
-				"\"previous\":\"http://localhost/products?page=2"
+				"\"previous\":\"/products?page=2"
 			)));
 	}
 
@@ -193,7 +193,7 @@ public class GetProductsTests {
 		this.mockMvc.perform(get("/products?test=hi")).andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString(
-				"\"next\":\"http://localhost/products?test=hi&page=2"
+				"\"next\":\"/products?test=hi&page=2"
 			)))
 			.andExpect(content().string(containsString(
 				"\"previous\":null"

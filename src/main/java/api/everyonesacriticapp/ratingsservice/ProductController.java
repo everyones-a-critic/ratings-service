@@ -52,8 +52,17 @@ public class ProductController {
 			queryString = "";
 			queryParamSep = "";
 		}
-		String requestURL = request.getRequestURL() + "?" + queryString + queryParamSep;
 		
+		String pathInfo = request.getPathInfo();
+		String servletPath = request.getServletPath();
+		String requestURL = "";
+		if (servletPath != null) {
+			requestURL += servletPath;
+		}
+		if (pathInfo != null) {
+			requestURL += pathInfo;
+		}
+		requestURL = requestURL + "?" + queryString + queryParamSep;
 		
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		jsonMap.put("results", results.getContent());
