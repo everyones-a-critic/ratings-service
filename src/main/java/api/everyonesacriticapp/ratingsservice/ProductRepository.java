@@ -1,6 +1,10 @@
 package api.everyonesacriticapp.ratingsservice;
 
 import org.springframework.data.domain.Pageable;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -22,13 +26,17 @@ public interface ProductRepository extends MongoRepository<Product, String> {
         "       {'$match': {'$expr': {'$and': [" +
         "           {'$eq': ['$user_id', ?1]}," +
         "           {'$eq': ['$archived', false]}," +
-        "           {'$eq': ['$$product_community_id', ?0)]}" +
+        "           {'$eq': ['$$product_community_id', ?0]}" +
         "       ]}}}," +
         "       {'$limit': 1} "+
         "   ]," +
         "   'as': 'ratings'" +
         "}}",
         "{'$match': {'ratings': {'$ne': []}}}",
+        "{'$sort': {'ratings.created_date': -1}}",
+        "{'$limit': ?2 }",
+        "{'$skip': ?3 }"
     })
-    Page<Product> findAllByCommunityIdWithRatings(ObjectId community_id, String user_id, Pageable pageable);
+    ArrayList<Product> findAllByCommunityIdWithRatings(ObjectId community_id, String user_id, Long limit, Long skip);
 }
+

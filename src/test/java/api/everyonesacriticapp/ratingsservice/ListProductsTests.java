@@ -243,19 +243,20 @@ public class ListProductsTests {
 		List<Product> sampleProducts = new ArrayList<Product>();
 		sampleProducts.add(createTestProduct(1, "633c9a8ca8c3f241bf1df1b3"));
 
-		List<Product> sampleProductsAlt = new ArrayList<Product>();
+		ArrayList<Product> sampleProductsAlt = new ArrayList<Product>();
 		sampleProductsAlt.add(createTestProduct(2));
 		
 		Mockito.when(mockPage.getContent()).thenReturn(sampleProducts);
 		Mockito.when(mockPage.getNumber()).thenReturn(0);
 		Mockito.when(mockPage.getTotalPages()).thenReturn(1);
 
-		Mockito.when(mockPageAlt.getContent()).thenReturn(sampleProductsAlt);
-		Mockito.when(mockPageAlt.getNumber()).thenReturn(0);
-		Mockito.when(mockPageAlt.getTotalPages()).thenReturn(1);
-
 		Mockito.when(mongoMock.findAll(ArgumentMatchers.isA(Pageable.class))).thenReturn(mockPage);
-		Mockito.when(mongoMock.findAllByCommunityIdWithRatings(ArgumentMatchers.isA(ObjectId.class), ArgumentMatchers.isA(String.class), ArgumentMatchers.isA(Pageable.class))).thenReturn(mockPageAlt);
+		Mockito.when(mongoMock.findAllByCommunityIdWithRatings(
+			ArgumentMatchers.isA(ObjectId.class), 
+			ArgumentMatchers.isA(String.class), 
+			ArgumentMatchers.isA(Long.class),
+			ArgumentMatchers.isA(Long.class)
+		)).thenReturn(sampleProductsAlt);
 
 		this.mockMvc.perform(get("/products?communityId=633c9a8ca8c3f241bf1df1b3&withRatings=true")
 			.header("Authorization", "eyJraWQiOiJYYVduT0g2Y0RQbkVTZktpRUdMU29wK3E5V0d3UCs5R3kwTXZMK2owdFwvQT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiZGJlZjY0ZS05MGRhLTRjOWYtYjQ5Ny0zYTI2ZThjZTEwNzMiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLXdlc3QtMS5hbWF6b25hd3MuY29tXC91cy13ZXN0LTFfUjZGSlRRdTFLIiwiY29nbml0bzp1c2VybmFtZSI6ImJkYmVmNjRlLTkwZGEtNGM5Zi1iNDk3LTNhMjZlOGNlMTA3MyIsIm9yaWdpbl9qdGkiOiIxYjg3YWI5ZC04NzUwLTQxNjgtOTBhYS04NDQ0ZDY2NTU0ZjIiLCJhdWQiOiIycGVwNDdyM3FxdmwwNXViODNqdGszcXVrcCIsImV2ZW50X2lkIjoiNGMxYzRkZGEtYTUzYy00ZWI2LTkxODgtMWRlMzIxYTM4NzhmIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2NjM3MDE5NzYsImV4cCI6MTY2NjAzNTQ2MSwiaWF0IjoxNjY2MDMxODYxLCJqdGkiOiIxOGNiMmEwYi02ZjAyLTQzMzktODYwYi1kYTlmYjEwMWZlMDciLCJlbWFpbCI6IjI0LmRhbmllbC5sb25nQGdtYWlsLmNvbSJ9.dDPx9eHWdT62dFZ-lWOfQ9dl9ib0AA35qGzY3f9Xobw_31GJ8VdOzyJ1tRhFJEeZTWKEgHJsIHWEal9j_JTXndj0mikxk_S_3sZhrp9rSzAaiywx9gnFiObSkqWCwSuuRE4sRhRwTWuP67eTiSTK9Phx4-Z_2114nNGdfEnHdjdMIZ2OnjIYt-rh5ypl4aeRUgW60JnWroUDgR2o-e_y3a4glmKD-AEQ83xpESsNZSxaoWTsaAnUGr2PWHGxa4IaE-p3cXABOZ5e_IbpX60AoQ9ITcqwaP1epLBDClg1KgyUFpbITJltSYgwTYIr74bEq7UruMyG-_tlIHQRf436vA")
