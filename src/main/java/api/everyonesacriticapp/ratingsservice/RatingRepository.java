@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface RatingRepository extends MongoRepository<Rating, String> {
     @Aggregation(pipeline={
-        "{ '$match': { 'product_id': ?0, 'user_id': ?1 }}",
+        "{ '$match': { 'product_id': ?0, 'user_id': ?1, 'archived': false }}",
         "{ '$sort' : { 'created_date' : -1 }}", 
         "{ '$limit': 1 }"
     })
