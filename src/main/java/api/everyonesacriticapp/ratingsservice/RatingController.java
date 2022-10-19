@@ -40,33 +40,12 @@ public class RatingController {
     @Autowired
     private RatingRepository repository;
 
-	private static String getUsername(HttpServletRequest request) {
-		String jwt = request.getHeader("Authorization");
-		String username = null;
-		if (jwt != null) {
-			String[] chunks = jwt.split("\\.");
-
-			Base64.Decoder decoder = Base64.getUrlDecoder();
-			String payload = new String(decoder.decode(chunks[1]));
-			
-			ObjectMapper objectMapper = new ObjectMapper();
-			JsonNode jsonNode = null;
-			try {
-				jsonNode = objectMapper.readTree(payload);
-			} catch (JsonProcessingException e) {}
-
-			if (jsonNode != null) {
-				username = jsonNode.get("cognito:username").asText();
-			}
-		}
-		return username;
-	}
 
 	@GetMapping("/products/{product_id}/ratings")
 	public Map<String, Object> getRating(@PathVariable ObjectId product_id, @RequestParam(required = false) String mostRecent,
 		HttpServletRequest request, Pageable pageable
 	) {
-		String username = getUsername(request);
+		String username = CognitoUtils.getUsername(request);
 		if (username != null) {
 			Page<Rating> ratingPage = new PageImpl<Rating>(new ArrayList<Rating>(), pageable, 0);	
 			if (mostRecent != null && (mostRecent.toLowerCase().equals("true") || mostRecent.toLowerCase().equals("yes") || mostRecent.equals("1"))) {
@@ -143,7 +122,7 @@ public class RatingController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating is required.");
 		}
 
-		String username = getUsername(request);
+		String username = CognitoUtils.getUsername(request);
 		if (username != null) {
 	
 			Optional<Rating> optRating = repository.findMostRecentByUserIdAndProductId(product_id, username);
@@ -193,7 +172,7 @@ public class RatingController {
 	public ResponseEntity<Rating> deleteRating(@PathVariable ObjectId product_id, @PathVariable String rating_id,
 		@RequestBody(required=false) RatingRequestModel requestRating, HttpServletRequest request
 	){
-		String username = getUsername(request);
+		String username = CognitoUtils.getUsername(request);
 		if (username == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 		}

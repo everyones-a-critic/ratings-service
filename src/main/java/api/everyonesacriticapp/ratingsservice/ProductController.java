@@ -23,17 +23,22 @@ public class ProductController {
     private ProductRepository repository;
 
 	@GetMapping("/products")
-	public Map<String, Object> getProducts(@RequestParam(required = false) String communityId, HttpServletRequest request, Pageable pageable) {
+	public Map<String, Object> listProducts(
+		@RequestParam(required = false) ObjectId communityId, @RequestParam(required = false) String withRatings, 
+		HttpServletRequest request, Pageable pageable
+	) {
+		String username = CognitoUtils.getUsername(request);
+		if (username == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+		} 
+
 		Page<Product> results;
 		if (communityId != null) {
-			ObjectId bson_id;
-			try {
-				bson_id = new ObjectId(communityId);
-			} catch (java.lang.IllegalArgumentException e) {
-				bson_id = new ObjectId();
+			if (withRatings != null && (withRatings.toLowerCase().equals("true") || withRatings.toLowerCase().equals("yes") || withRatings.equals("1"))) {
+				results = repository.findAllByCommunityIdWithRatings(communityId, username, pageable);
+			} else {
+				results = repository.findAllByCommunityId(communityId, pageable);
 			}
-
-			results = repository.findByCommunityId(bson_id, pageable);
 		} else {
 			results = repository.findAll(pageable);	
 		}
