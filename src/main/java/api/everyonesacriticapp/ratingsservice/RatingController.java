@@ -27,11 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.boot.jackson.JsonObjectDeserializer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 
 @RestController
@@ -62,23 +63,66 @@ public class RatingController {
 	}
 
 	@GetMapping("/products/{product_id}/ratings")
-	public List<Rating> getRating(@PathVariable String product_id, @RequestParam(required = false) String mostRecent,
-		HttpServletRequest request
+	public Map<String, Object> getRating(@PathVariable String product_id, @RequestParam(required = false) String mostRecent,
+		HttpServletRequest request, Pageable pageable
 	) {
 		String username = getUsername(request);
 		if (username != null) {
-			List<Rating> ratingList = new ArrayList<Rating>();
+			Page<Rating> ratingPage = new PageImpl<Rating>(new ArrayList<Rating>(), pageable, 0);	
 			if (mostRecent != null && (mostRecent.toLowerCase().equals("true") || mostRecent.toLowerCase().equals("yes") || mostRecent.equals("1"))) {
 				Optional<Rating> optRating = repository.findMostRecentByUserIdAndProductId(product_id, username);
 				if (optRating.isPresent()) {
+					List<Rating> ratingList = new ArrayList<Rating>();
 					ratingList.add(optRating.get());
+					ratingPage = new PageImpl<Rating>(ratingList, pageable, 1);	
 				}
 			} else {
-				ratingList = repository.findAllByUserIdAndProductId(product_id, username);
+				ratingPage = repository.findAllByUserIdAndProductId(product_id, username, pageable);
 			}
 
+			// because one-indexed-parameters is set to true in application.properties
+			int pageNumber = ratingPage.getNumber() + 1;
+			int totalPages = ratingPage.getTotalPages();
 
-			return ratingList;
+			String queryString = request.getQueryString();
+			String queryParamSep;
+			if (queryString != null) {
+				queryString = queryString.replace("&page=" + String.valueOf(pageNumber), "");
+				queryString = queryString.replace("page=" + String.valueOf(pageNumber), "");
+				queryParamSep = "&";
+			} else {
+				queryString = "";
+				queryParamSep = "";
+			}
+			
+			String pathInfo = request.getPathInfo();
+			String servletPath = request.getServletPath();
+			String requestURL = "";
+			if (servletPath != null) {
+				requestURL += servletPath;
+			}
+			if (pathInfo != null) {
+				requestURL += pathInfo;
+			}
+			requestURL = requestURL + "?" + queryString + queryParamSep;
+			
+			Map<String, Object> jsonMap = new HashMap<String, Object>();
+			jsonMap.put("results", ratingPage.getContent());
+
+			String nextUrl = null;
+			String previousUrl = null;
+			if (pageNumber > 1) {
+				previousUrl = requestURL + "page=" + String.valueOf(pageNumber - 1);
+			}
+
+			if (pageNumber < totalPages) {
+				nextUrl = requestURL + "page=" + String.valueOf(pageNumber + 1);
+			}
+
+			jsonMap.put("next", nextUrl);
+			jsonMap.put("previous", previousUrl);
+			
+			return jsonMap;
 		} else {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 		}
