@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -102,8 +103,6 @@ public class RatingController {
 		if (username != null) {
 	
 			Optional<Rating> optRating = repository.findMostRecentByUserIdAndProductId(product_id, username);
-			System.out.println("optRating.isPresent(): ");
-			System.out.println(optRating.isPresent());
 			if (optRating.isPresent()) {
 				Rating rating = optRating.get();
 				long dateDiff = Duration.between(rating.created_date, Instant.now()).toHours();
@@ -146,4 +145,38 @@ public class RatingController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@PatchMapping("/products/{product_id}/ratings/{rating_id}")
+	public ResponseEntity<Rating> deleteRating(@PathVariable String product_id, @PathVariable String rating_id,
+		@RequestBody(required=false) RatingRequestModel requestRating, HttpServletRequest request
+	){
+		String username = getUsername(request);
+		if (username == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+		}
+
+		Optional<Rating> optRating = repository.findById(rating_id);
+		if (optRating.isPresent()) {
+			Rating rating = optRating.get();
+			if (requestRating != null) {
+				if (requestRating.rating != null) {
+					rating.rating = requestRating.rating;
+				}
+				if (requestRating.comments != null) {
+					rating.comments = requestRating.comments;
+				}
+				if (requestRating.archived != null) {
+					rating.archived = requestRating.archived;
+				}
+				
+				rating.setModifedById(username);
+				rating.setModifedDate();
+				Rating updatedRating = repository.save(rating);
+				return ResponseEntity.status(HttpStatus.OK).body(updatedRating);
+			} else {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A patch request must include fields to update");
+			}
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+	}
 }

@@ -15,6 +15,7 @@ public class Rating {
     public String user_id;
     public Double rating;
     public String comments;
+    public Boolean archived;
     private String created_by_id;
     public Instant created_date;
     private String modified_by_id;
@@ -23,7 +24,7 @@ public class Rating {
     public Rating() {}
 
     public Rating(
-        String id, String product_id, String user_id, Double rating, String comments, 
+        String id, String product_id, String user_id, Double rating, String comments, Boolean archived,
         String created_by_id, Instant created_date, String modified_by_id, Instant modified_date
     ) {
         this.id = id;
@@ -31,6 +32,7 @@ public class Rating {
         this.user_id = user_id;
         this.rating = rating;
         this.comments = comments;
+        this.archived = archived;
         this.created_by_id = created_by_id;
         this.created_date = created_date;
         this.modified_by_id = modified_by_id;
@@ -38,7 +40,7 @@ public class Rating {
     }
 
     public Rating(
-        String product_id, String user_id, Double rating, String comments, 
+        String product_id, String user_id, Double rating, String comments,
         String created_by_id, Instant created_date, String modified_by_id, Instant modified_date
     ) {
         this.id = null;
@@ -46,6 +48,7 @@ public class Rating {
         this.user_id = user_id;
         this.rating = rating;
         this.comments = comments;
+        this.archived = false;
         this.created_by_id = created_by_id;
         this.created_date = created_date;
         this.modified_by_id = modified_by_id;

@@ -56,7 +56,7 @@ public class PostRatingTests {
 	@Test
 	public void testExistingRating() throws Exception {
     	Rating existingRating = new Rating(
-			"test-rating", "633dcc5180a00f92bf00826c", "sample-user", 3.33, null, 
+			"test-rating", "633dcc5180a00f92bf00826c", "sample-user", 3.33, null, false,
 			"sample-user", Instant.now().minus( 1 , ChronoUnit.HOURS ),
 			"sample-user", Instant.now().minus( 1 , ChronoUnit.HOURS )
 		);
@@ -79,7 +79,7 @@ public class PostRatingTests {
 	@Test
 	public void testExistingRatingTooOld() throws Exception {
     	Rating existingRating = new Rating(
-			"test-rating", "633dcc5180a00f92bf00826c", "sample-user", 3.33, null, 
+			"test-rating", "633dcc5180a00f92bf00826c", "sample-user", 3.33, null, false,
 			"sample-user", Instant.now().minus( 25 , ChronoUnit.HOURS ),
 			"sample-user", Instant.now().minus( 25 , ChronoUnit.HOURS )
 		);
