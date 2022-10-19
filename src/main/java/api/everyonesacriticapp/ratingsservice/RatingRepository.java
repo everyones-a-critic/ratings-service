@@ -21,8 +21,7 @@ public interface RatingRepository extends MongoRepository<Rating, String> {
 
     @Aggregation(pipeline={
         "{ '$match': { 'product_id': ?0, 'user_id': ?1 }}",
-        "{ '$sort' : { 'created_date' : -1 }}", 
-        "{ '$limit': 1 }"
+        "{ '$sort' : { 'created_date' : -1 }}"
     })
     List<Rating> findAllByUserIdAndProductId(String product_id, String user_id);
 }
