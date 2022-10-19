@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -56,11 +57,11 @@ public class PostRatingTests {
 	@Test
 	public void testExistingRating() throws Exception {
     	Rating existingRating = new Rating(
-			"test-rating", "633dcc5180a00f92bf00826c", "sample-user", 3.33, null, false,
+			"test-rating", new ObjectId("633dcc5180a00f92bf00826c"), "sample-user", 3.33, null, false,
 			"sample-user", Instant.now().minus( 1 , ChronoUnit.HOURS ),
 			"sample-user", Instant.now().minus( 1 , ChronoUnit.HOURS )
 		);
-		Mockito.when(mongoMock.findMostRecentByUserIdAndProductId("633dcc5180a00f92bf00826c", "bdbef64e-90da-4c9f-b497-3a26e8ce1073")).thenReturn(Optional.of(existingRating));
+		Mockito.when(mongoMock.findMostRecentByUserIdAndProductId(new ObjectId("633dcc5180a00f92bf00826c"), "bdbef64e-90da-4c9f-b497-3a26e8ce1073")).thenReturn(Optional.of(existingRating));
 		
 		Mockito.when(mongoMock.save(ArgumentMatchers.isA(Rating.class))).thenReturn(null);
 		this.mockMvc.perform(post("/products/633dcc5180a00f92bf00826c/ratings/")
@@ -79,11 +80,11 @@ public class PostRatingTests {
 	@Test
 	public void testExistingRatingTooOld() throws Exception {
     	Rating existingRating = new Rating(
-			"test-rating", "633dcc5180a00f92bf00826c", "sample-user", 3.33, null, false,
+			"test-rating", new ObjectId("633dcc5180a00f92bf00826c"), "sample-user", 3.33, null, false,
 			"sample-user", Instant.now().minus( 25 , ChronoUnit.HOURS ),
 			"sample-user", Instant.now().minus( 25 , ChronoUnit.HOURS )
 		);
-		Mockito.when(mongoMock.findMostRecentByUserIdAndProductId("633dcc5180a00f92bf00826c", "bdbef64e-90da-4c9f-b497-3a26e8ce1073")).thenReturn(Optional.of(existingRating));
+		Mockito.when(mongoMock.findMostRecentByUserIdAndProductId(new ObjectId("633dcc5180a00f92bf00826c"), "bdbef64e-90da-4c9f-b497-3a26e8ce1073")).thenReturn(Optional.of(existingRating));
 		
 		Mockito.when(mongoMock.save(ArgumentMatchers.isA(Rating.class))).thenReturn(null);
 		this.mockMvc.perform(post("/products/633dcc5180a00f92bf00826c/ratings/")

@@ -2,6 +2,7 @@ package api.everyonesacriticapp.ratingsservice;
 
 import java.time.Instant;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,7 +12,7 @@ public class Rating {
 
     @Id
     public String id;
-    public String product_id;
+    private ObjectId product_id;
     public String user_id;
     public Double rating;
     public String comments;
@@ -24,7 +25,7 @@ public class Rating {
     public Rating() {}
 
     public Rating(
-        String id, String product_id, String user_id, Double rating, String comments, Boolean archived,
+        String id, ObjectId product_id, String user_id, Double rating, String comments, Boolean archived,
         String created_by_id, Instant created_date, String modified_by_id, Instant modified_date
     ) {
         this.id = id;
@@ -40,7 +41,7 @@ public class Rating {
     }
 
     public Rating(
-        String product_id, String user_id, Double rating, String comments,
+        ObjectId product_id, String user_id, Double rating, String comments,
         String created_by_id, Instant created_date, String modified_by_id, Instant modified_date
     ) {
         this.id = null;
@@ -65,6 +66,10 @@ public class Rating {
     
     public void setCreatedDate() {
         this.created_date = Instant.now();
+    }
+
+    public String getProduct_id() {
+        return product_id.toString();
     }
 
 }

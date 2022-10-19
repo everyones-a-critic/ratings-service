@@ -20,9 +20,9 @@ public interface RatingRepository extends MongoRepository<Rating, String> {
         "{ '$sort' : { 'created_date' : -1 }}", 
         "{ '$limit': 1 }"
     })
-    Optional<Rating> findMostRecentByUserIdAndProductId(String product_id, String user_id);
+    Optional<Rating> findMostRecentByUserIdAndProductId(ObjectId product_id, String user_id);
 
     @Query("{'product_id' : ?0, 'user_id': ?1}")
-    Page<Rating> findAllByUserIdAndProductId(String product_id, String user_id, Pageable pageable);
+    Page<Rating> findAllByUserIdAndProductId(ObjectId product_id, String user_id, Pageable pageable);
 
 }

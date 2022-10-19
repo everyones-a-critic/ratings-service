@@ -1,18 +1,16 @@
 package api.everyonesacriticapp.ratingsservice;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -41,7 +39,7 @@ public class PatchRatingTests {
 
 	public static Rating createRating(Integer number) {
 		return new Rating(
-			"test-rating-" + String.valueOf(number), "633dcc5180a00f92bf00826c", "sample-user", 3.33, null, false,
+			"test-rating-" + String.valueOf(number), new ObjectId("633dcc5180a00f92bf00826c"), "sample-user", 3.33, null, false,
 			"sample-user", Instant.now().minus( 25 , ChronoUnit.HOURS ),
 			"sample-user", Instant.now().minus( 25 , ChronoUnit.HOURS )
 		);

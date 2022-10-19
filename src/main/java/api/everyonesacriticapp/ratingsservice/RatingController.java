@@ -63,7 +63,7 @@ public class RatingController {
 	}
 
 	@GetMapping("/products/{product_id}/ratings")
-	public Map<String, Object> getRating(@PathVariable String product_id, @RequestParam(required = false) String mostRecent,
+	public Map<String, Object> getRating(@PathVariable ObjectId product_id, @RequestParam(required = false) String mostRecent,
 		HttpServletRequest request, Pageable pageable
 	) {
 		String username = getUsername(request);
@@ -134,7 +134,7 @@ public class RatingController {
 		path="/products/{product_id}/ratings",
 		consumes = {MediaType.APPLICATION_JSON_VALUE}
 	)
-	public ResponseEntity<Rating> createRating(@PathVariable String product_id,
+	public ResponseEntity<Rating> createRating(@PathVariable ObjectId product_id,
 		@RequestBody(required=false) RatingRequestModel requestRating,
 		HttpServletRequest request
 	) {
@@ -182,7 +182,7 @@ public class RatingController {
 	}
 
 	@DeleteMapping("/products/{product_id}/ratings/{rating_id}")
-	public ResponseEntity<Void> deleteRating(@PathVariable String product_id, @PathVariable String rating_id,
+	public ResponseEntity<Void> deleteRating(@PathVariable ObjectId product_id, @PathVariable String rating_id,
 		HttpServletRequest request
 	){
 		repository.deleteById(rating_id);
@@ -190,7 +190,7 @@ public class RatingController {
 	}
 
 	@PatchMapping("/products/{product_id}/ratings/{rating_id}")
-	public ResponseEntity<Rating> deleteRating(@PathVariable String product_id, @PathVariable String rating_id,
+	public ResponseEntity<Rating> deleteRating(@PathVariable ObjectId product_id, @PathVariable String rating_id,
 		@RequestBody(required=false) RatingRequestModel requestRating, HttpServletRequest request
 	){
 		String username = getUsername(request);
