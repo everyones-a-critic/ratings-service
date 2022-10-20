@@ -56,7 +56,7 @@ variable "container_memory" {
 
 variable "health_check_path" {
   description = "Http path for task health check"
-  default     = "/products"
+  default     = "/health-check"
 }
 
 variable "mongo_region" {
