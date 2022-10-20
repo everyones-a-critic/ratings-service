@@ -1,9 +1,7 @@
 package api.everyonesacriticapp.ratingsservice;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,7 +49,7 @@ public class ProductController {
 				
 				// total must be greater than number of page elements in order for next page to be rendered
 				long mockTotal = pageNumber  * pageSize;
-				System.out.println("productList.size(): " + productList.size());
+
 				if (productList.size() > pageSize) {
 					// remove last element
 					productList.remove(pageSize);
@@ -63,16 +61,12 @@ public class ProductController {
 				results = repository.findAllByCommunityId(communityId, pageable);
 			}
 		} else {
-			System.out.println("Here 1");
 			results = repository.findAll(pageable);	
-			System.out.println("Here 2");
 		}
 
 		// because one-indexed-parameters is set to true in application.properties
 		int pageNumber = results.getNumber() + 1;
-		System.out.println("pageNumber: " + pageNumber);
 		int totalPages = results.getTotalPages();
-		System.out.println("totalPages: " + totalPages);
 		
 		String queryString = request.getQueryString();
 		String queryParamSep;
