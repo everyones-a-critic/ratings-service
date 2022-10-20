@@ -63,7 +63,9 @@ public class ProductController {
 				results = repository.findAllByCommunityId(communityId, pageable);
 			}
 		} else {
+			System.out.println("Here 1");
 			results = repository.findAll(pageable);	
+			System.out.println("Here 2");
 		}
 
 		// because one-indexed-parameters is set to true in application.properties
