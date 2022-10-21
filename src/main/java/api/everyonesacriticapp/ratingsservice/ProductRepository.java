@@ -30,12 +30,13 @@ public interface ProductRepository extends MongoRepository<Product, String> {
         "       ]}}}," +
         "       {'$limit': 1} "+
         "   ]," +
-        "   'as': 'ratings'" +
+        "   'as': 'rating'" +
         "}}",
-        "{'$match': {'ratings': {'$ne': []}}}",
-        "{'$sort': {'ratings.created_date': -1}}",
+        "{'$match': {'rating': {'$ne': []}}}",
+        "{'$sort': {'rating.created_date': -1}}",
         "{'$limit': ?2 }",
-        "{'$skip': ?3 }"
+        "{'$skip': ?3 }",
+        "{'$unwind': {'path': '$rating'}}"
     })
     ArrayList<Product> findAllByCommunityIdWithRatings(ObjectId community_id, String user_id, Long limit, Long skip);
 }
