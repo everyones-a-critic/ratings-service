@@ -51,9 +51,9 @@ public class ListProductsTests {
 			"comm-12345",
 			"Sample Brand",
 			"https://www.example.com/image",
-			new ArrayList<String>(List.of("Some", "Tasting", "Notes")),
 			19.5,
 			"12 oz",
+			new ArrayList<String>(List.of("Some", "Tasting", "Notes")),
 			new ArrayList<String>(List.of("Some", "Categories")),
 			"North America",
 			"A Process",
@@ -72,9 +72,9 @@ public class ListProductsTests {
 			communityId,
 			"Sample Brand",
 			"https://www.example.com/image",
-			new ArrayList<String>(List.of("Some", "Tasting", "Notes")),
 			19.5,
 			"12 oz",
+			new ArrayList<String>(List.of("Some", "Tasting", "Notes")),
 			new ArrayList<String>(List.of("Some", "Categories")),
 			"North America",
 			"A Process",
@@ -102,7 +102,7 @@ public class ListProductsTests {
 		).andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().string(equalTo(
-				"{\"next\":null,\"previous\":null,\"results\":[{\"id\":\"prod-12345\",\"name\":\"Sample Product\",\"community_id\":\"comm-12345\",\"brand\":\"Sample Brand\",\"image_url\":\"https://www.example.com/image\",\"tasting_notes\":[\"Some\",\"Tasting\",\"Notes\"],\"price\":19.5,\"price_per\":\"12 oz\",\"categories\":[\"Some\",\"Categories\"],\"location\":\"North America\",\"process\":\"A Process\",\"variety\":\"A Variety\",\"created_date\":\"2022-09-28T19:39:43Z\",\"modified_date\":\"2022-09-28T19:39:43Z\"}]}"
+				"{\"next\":null,\"previous\":null,\"results\":[{\"id\":\"prod-12345\",\"name\":\"Sample Product\",\"community_id\":\"comm-12345\",\"brand\":\"Sample Brand\",\"image_url\":\"https://www.example.com/image\",\"price\":19.5,\"price_per\":\"12 oz\",\"categories\":[\"Some\",\"Tasting\",\"Notes\"],\"location\":\"North America\",\"process\":\"A Process\",\"variety\":\"A Variety\",\"tasting_notes\":[\"Some\",\"Categories\"],\"created_date\":\"2022-09-28T19:39:43Z\",\"modified_date\":\"2022-09-28T19:39:43Z\"}]}"
 			)));
 	}
 
