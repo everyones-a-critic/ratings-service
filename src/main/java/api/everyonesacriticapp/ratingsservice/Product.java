@@ -25,18 +25,17 @@ public class Product {
 
     // product specific
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    public List<String> tasting_notes;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String location;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String process;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String variety;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public List<String> tasting_notes;
+    public String region;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    String region;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    Float abv;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Float abv;
     
 
     private String created_by_id;
